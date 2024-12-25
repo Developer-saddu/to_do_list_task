@@ -192,8 +192,6 @@ export default function ToDoList() {
         </div>
       )}
 
-      {/* <table className="table-auto w-full border-collapse border border-gray-300"> */}
-      {/* <table className="table-auto h-8 w-full border-collapse border border-gray-300"> */}
       <table
         className="table-auto w-full border-collapse border border-gray-300"
         style={{ maxHeight: "300px", overflowY: "auto" }}
