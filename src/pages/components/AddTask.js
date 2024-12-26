@@ -25,7 +25,6 @@ const AddTask = () => {
         payload
       );
       console.log(response);
-
       alert(response.data.message);
       setShowPopup(false);
       setTaskData({ newTask: "", dueDate: "", remark: "" });
@@ -76,7 +75,6 @@ const AddTask = () => {
                 }
                 className="textarea textarea-bordered w-full mb-4 rounded-none focus:outline-none focus:ring-0"
               />
-
               <div className="flex justify-center gap-2">
                 <button
                   type="button"
