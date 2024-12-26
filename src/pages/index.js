@@ -12,10 +12,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="max-w-4xl mx-auto mt-2">
-        <div className="text-center flex flex-col gap-4">
+        {/* <div className="text-center flex flex-col gap-4 mb-10">
           <h1 className="text-2xl font-bold">To-Do List App</h1>
           <AddTask />
-        </div>
+        </div> */}
         <ToDoList />
       </main>
     </>

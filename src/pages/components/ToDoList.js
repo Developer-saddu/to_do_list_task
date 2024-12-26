@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
+import AddTask from "./AddTask";
 
 export default function ToDoList() {
   const [tasks, setTasks] = useState([]);
@@ -8,7 +9,10 @@ export default function ToDoList() {
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [loading, setLoading] = useState(false);
-  const baseUrl = "https://mp6vd1ss-8080.inc1.devtunnels.ms";
+  const [loadingEdit, setLoadingEdit] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
+  const baseUrl = "http://localhost:8080";
 
   useEffect(() => {
     console.log("---------------------------------");
@@ -35,7 +39,7 @@ export default function ToDoList() {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingEdit(true);
     try {
       let response = await axios.put(
         `${baseUrl}/api/v1/task/update/${editTask.id}`,
@@ -51,7 +55,7 @@ export default function ToDoList() {
     } catch (error) {
       alert(error.message);
     } finally {
-      setLoading(false);
+      setLoadingEdit(false);
     }
   };
 
@@ -61,7 +65,7 @@ export default function ToDoList() {
   };
 
   const confirmDelete = async () => {
-    setLoading(true);
+    setLoadingDelete(true);
     try {
       let response = await axios.delete(
         `${baseUrl}/api/v1/task/delete/${taskToDelete}`
@@ -74,7 +78,7 @@ export default function ToDoList() {
       console.log("----error-----", error.message);
       alert(error.message);
     } finally {
-      setLoading(false);
+      setLoadingDelete(false);
     }
   };
 
@@ -85,8 +89,10 @@ export default function ToDoList() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 ">
-      <h1 className="text-2xl font-bold mb-4 text-left">To-Do List</h1>
-
+      <div className="flex justify-between items-center p-4">
+        <h1 className="text-2xl font-bold text-left">To-Do List</h1>
+        <AddTask />
+      </div>
       {editTask && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow-md w-96">
@@ -150,8 +156,9 @@ export default function ToDoList() {
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-500 text-white rounded-none"
+                  disabled={loadingEdit}
                 >
-                  Save
+                  {loadingEdit ? "Loading..." : "Update"}
                 </button>
               </div>
             </form>
@@ -160,10 +167,10 @@ export default function ToDoList() {
       )}
       {showDeleteWarning && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-md w-80">
+          <div className="bg-white p-6 rounded shadow-md w-80 text-center">
             <h2 className="text-lg font-bold mb-4">Remove Task</h2>
             <p className="mb-4">Are you sure you want to remove this task?</p>
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-end gap-4 justify-center">
               <button
                 onClick={cancelDelete}
                 className="px-4 py-2 bg-gray-300 rounded-none focus:outline-none focus:ring-0"
@@ -173,77 +180,77 @@ export default function ToDoList() {
               <button
                 onClick={confirmDelete}
                 className="px-4 py-2 bg-red-500 text-white rounded-none focus:outline-none focus:ring-0"
+                disabled={loadingDelete}
               >
-                Remove
+                {loadingDelete ? "Loading..." : "Remove"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {loading && (
-        <div className="flex justify-center items-center">
-          <div
-            className="spinner-border animate-spin text-blue-500"
-            role="status"
-          >
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
-      )}
-
-      <table
-        className="table-auto w-full border-collapse border border-gray-300"
-        style={{ maxHeight: "300px", overflowY: "auto" }}
-      >
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2 justify-center">
-              Task
-            </th>
-            <th className="border border-gray-300 px-4 py-2">Status</th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tasks.length === 0 ? (
-            <tr>
-              <td
-                colSpan="4"
-                className="border border-gray-300 px-4 py-2 text-center"
-              >
-                No tasks available
-              </td>
+      <div className="max-h-[600px] overflow-auto">
+        <table className="table-auto w-full border-collapse border border-gray-300">
+          <thead className="sticky top-0">
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2">S.No</th>
+              <th className="border border-gray-300 px-4 py-2">ID</th>
+              <th className="border border-gray-300 px-4 py-2 justify-center">
+                Task
+              </th>
+              <th className="border border-gray-300 px-4 py-2">Status</th>
+              <th className="border border-gray-300 px-4 py-2">Action</th>
             </tr>
-          ) : (
-            tasks.map((task) => (
-              <tr
-                key={task.id}
-                className="border border-gray-300 px-4 py-2 text-center"
-              >
-                <td className="border border-gray-300">{task.id}</td>
-                <td className="border border-gray-300">{task.taskName}</td>
-                <td className="border border-gray-300">{task.status}</td>
-                <td className=" px-8 py-2 text-center flex justify-center gap-4">
-                  <button
-                    onClick={() => handleEditTask(task.id)}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    <FaEdit size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(task.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <FaTrash size={18} />
-                  </button>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr className="h-40">
+                <td
+                  colSpan="5"
+                  className="border border-gray-300 px-4 py-2 text-center"
+                >
+                  Loading...
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : tasks.length === 0 ? (
+              <tr className="h-40">
+                <td
+                  colSpan="5"
+                  className="border border-gray-300 px-4 py-2 text-center"
+                >
+                  No tasks available
+                </td>
+              </tr>
+            ) : (
+              tasks.map((task, index) => (
+                <tr
+                  key={index}
+                  className="border border-gray-300 px-4 py-2 text-center"
+                >
+                  <td className="border border-gray-300">{index + 1}</td>
+                  <td className="border border-gray-300">{task.id}</td>
+                  <td className="border border-gray-300">{task.taskName}</td>
+                  <td className="border border-gray-300">{task.status}</td>
+                  <td className=" px-8 py-2 text-center flex justify-center gap-4">
+                    <button
+                      onClick={() => handleEditTask(task.id)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      <FaEdit size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(task.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <FaTrash size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

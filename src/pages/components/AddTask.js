@@ -6,8 +6,9 @@ const AddTask = () => {
   const [taskData, setTaskData] = useState({
     newTask: "",
     dueDate: "",
-    remark: ""
+    remark: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleAddTask = async (e) => {
     e.preventDefault();
@@ -17,9 +18,10 @@ const AddTask = () => {
       return;
     }
     try {
+      setLoading(true);
       let payload = { task: newTask, dueDate, remark };
       const response = await axios.post(
-        "https://mp6vd1ss-8080.inc1.devtunnels.ms/api/v1/task/create",
+        "http://localhost:8080/api/v1/task/create",
         payload
       );
       console.log(response);
@@ -29,17 +31,18 @@ const AddTask = () => {
       setTaskData({ newTask: "", dueDate: "", remark: "" });
     } catch (error) {
       console.log("Error adding task:", error);
-      alert("Failed to add task. Try again.");
+      alert(error.message);
     } finally {
+      setLoading(false);
       window.location.reload();
     }
   };
 
   return (
-    <div className="max-w-md mx-auto ">
+    <div>
       <button
         onClick={() => setShowPopup(true)}
-        className="btn btn-primary rounded-none text-white w-[500px] bg-blue-400 hover:bg-blue-600 text-xl"
+        className="btn btn-primary rounded-none text-white w-40 bg-blue-400 hover:bg-blue-600 text-xl"
       >
         Add Task
       </button>
@@ -74,7 +77,7 @@ const AddTask = () => {
                 className="textarea textarea-bordered w-full mb-4 rounded-none focus:outline-none focus:ring-0"
               />
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-center gap-2">
                 <button
                   type="button"
                   onClick={() => setShowPopup(false)}
@@ -85,8 +88,9 @@ const AddTask = () => {
                 <button
                   type="submit"
                   className="btn bg-blue-500 text-white hover:bg-blue-700 rounded-none"
+                  disabled={loading}
                 >
-                  Add Task
+                  {loading ? "Loading..." : "Add Task"}
                 </button>
               </div>
             </form>
