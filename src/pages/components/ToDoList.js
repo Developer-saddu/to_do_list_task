@@ -54,6 +54,7 @@ export default function ToDoList() {
       alert(response.data.message);
     } catch (error) {
       alert(error.message);
+      console.log("------error---", error.message);
     } finally {
       setLoadingEdit(false);
     }
@@ -188,7 +189,6 @@ export default function ToDoList() {
           </div>
         </div>
       )}
-
       <div className="max-h-[600px] overflow-auto">
         <table className="table-auto w-full border-collapse border border-gray-300">
           <thead className="sticky top-0">
